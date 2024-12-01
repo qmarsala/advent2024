@@ -30,7 +30,6 @@ func ReadHistorianHysteriaInput() (listA []int64, listB []int64, err error) {
 	}()
 
 	scanner := bufio.NewScanner(file)
-
 	for scanner.Scan() {
 		line := scanner.Text()
 		parts := strings.Split(line, "   ")
@@ -47,7 +46,6 @@ func HistorianHysteria(listA []int64, listB []int64) int64 {
 	slices.Sort(listB)
 	var total int64 = 0
 	for i := 0; i < len(listA); i++ {
-		fmt.Printf("%v | %v\n", listA[i], listB[i])
 		if listA[i] < listB[i] {
 			total += listB[i] - listA[i]
 		} else {
