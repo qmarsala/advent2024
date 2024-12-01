@@ -13,7 +13,7 @@ import (
 func main() {
 	fmt.Println("Merry Christmas!")
 	listA, listB, _ := ReadHistorianHysteriaInput()
-	result := HistorianHysteria(listA, listB)
+	result := HistorianHysteriaDifference(listA, listB)
 	fmt.Println(result)
 }
 
@@ -41,7 +41,7 @@ func ReadHistorianHysteriaInput() (listA []int64, listB []int64, err error) {
 	return listA, listB, nil
 }
 
-func HistorianHysteria(listA []int64, listB []int64) int64 {
+func HistorianHysteriaDifference(listA []int64, listB []int64) int64 {
 	slices.Sort(listA)
 	slices.Sort(listB)
 	var total int64 = 0
@@ -53,4 +53,8 @@ func HistorianHysteria(listA []int64, listB []int64) int64 {
 		}
 	}
 	return total
+}
+
+func HistorianHysteriaSimilarity(listA []int64, listB []int64) int64 {
+	return 0
 }
