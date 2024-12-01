@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestHistorianHysteria(t *testing.T) {
+func TestHistorianHysteriaDifference(t *testing.T) {
 	t.Run("1 2 3, 3 2 1 = 0", func(t *testing.T) {
 		listA := []int64{1, 2, 3}
 		listB := []int64{3, 2, 1}
@@ -26,11 +26,11 @@ func TestHistorianHysteria(t *testing.T) {
 	})
 
 	t.Run("3 2 2, 1 1 1 = 4", func(t *testing.T) {
-		listA := []int64{2, 2, 3}
-		listB := []int64{3, 2, 1}
+		listA := []int64{3, 2, 2}
+		listB := []int64{1, 1, 1}
 		result := HistorianHysteria(listA, listB)
 
-		if result != 1 {
+		if result != 4 {
 			t.Error("Expected 4, got ", result)
 		}
 	})
