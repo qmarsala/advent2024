@@ -1,10 +1,8 @@
 package day01
 
 import (
-	"bufio"
+	"advent2024/fileio"
 	"fmt"
-	"log"
-	"os"
 	"slices"
 	"strconv"
 	"strings"
@@ -23,20 +21,12 @@ func RunDay() {
 }
 
 func ReadHistorianHysteriaInput() (listA []int64, listB []int64, err error) {
-	file, err := os.Open("./day01/input.txt")
+	lines, err := fileio.ReadAllLines("./day01/input.txt")
 	if err != nil {
-		log.Fatal(err)
 		return nil, nil, err
 	}
-	defer func() {
-		if err = file.Close(); err != nil {
-			log.Fatal(err)
-		}
-	}()
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
+	for _, line := range lines {
 		parts := strings.Split(line, "   ")
 		valueA, _ := strconv.ParseInt(parts[0], 10, 64)
 		valueB, _ := strconv.ParseInt(parts[1], 10, 64)
