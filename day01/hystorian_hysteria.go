@@ -2,6 +2,7 @@ package day01
 
 import (
 	"advent2024/fileio"
+	"advent2024/math"
 	"fmt"
 	"slices"
 	"strconv"
@@ -41,11 +42,7 @@ func HistorianHysteriaDifference(listA []int64, listB []int64) int64 {
 	slices.Sort(listB)
 	var total int64 = 0
 	for i := 0; i < len(listA); i++ {
-		if listA[i] < listB[i] {
-			total += listB[i] - listA[i]
-		} else {
-			total += listA[i] - listB[i]
-		}
+		total += math.GetDiff(listA[i], listB[i])
 	}
 	return total
 }

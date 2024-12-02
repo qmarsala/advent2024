@@ -2,6 +2,7 @@ package day02
 
 import (
 	"advent2024/fileio"
+	"advent2024/math"
 	"fmt"
 	"strconv"
 	"strings"
@@ -49,7 +50,7 @@ func CheckPlantReport(report []int64) (safe bool) {
 	current_level := report[0]
 	is_desc := current_level > report[1]
 	for i := 1; i < len(report); i++ {
-		diff := GetDiff(current_level, report[i])
+		diff := math.GetDiff(current_level, report[i])
 		if diff < 1 || diff > 3 {
 			return false
 		}
@@ -75,14 +76,6 @@ func CheckPlantReportWithDampening(report []int64) (safe bool) {
 		}
 	}
 	return false
-}
-
-func GetDiff(a int64, b int64) int64 {
-	if a < b {
-		return b - a
-	} else {
-		return a - b
-	}
 }
 
 func RemoveIndex(s []int64, index int) []int64 {
