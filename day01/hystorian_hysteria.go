@@ -23,7 +23,7 @@ func RunDay() {
 }
 
 func ReadHistorianHysteriaInput() (listA []int64, listB []int64, err error) {
-	file, err := os.Open("input.txt")
+	file, err := os.Open("./day01/input.txt")
 	if err != nil {
 		log.Fatal(err)
 		return nil, nil, err
