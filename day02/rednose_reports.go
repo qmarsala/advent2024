@@ -13,10 +13,7 @@ func RunDay() {
 		fmt.Printf("Day02 - [ERROR]: %v\n", err)
 		return
 	}
-	part1 := CountSafeReports(reports, func(r []int64) bool {
-		safe, _ := CheckPlantReport(r)
-		return safe
-	})
+	part1 := CountSafeReports(reports, CheckPlantReport)
 	part2 := CountSafeReports(reports, CheckPlantReportWithDampening)
 	fmt.Printf("Day02: %v, %v \n", part1, part2)
 }
@@ -48,29 +45,36 @@ func CountSafeReports(reports [][]int64, strategy func([]int64) bool) (count int
 	return
 }
 
-func CheckPlantReport(report []int64) (safe bool, problemIndex int) {
+func CheckPlantReport(report []int64) (safe bool) {
 	current_level := report[0]
 	is_desc := current_level > report[1]
 	for i := 1; i < len(report); i++ {
 		diff := GetDiff(current_level, report[i])
 		if diff < 1 || diff > 3 {
-			return false, i - 1
+			return false
 		}
 		if (is_desc && current_level < report[i]) || (!is_desc && current_level > report[i]) {
-			return false, i - 1
+			return false
 		}
 		current_level = report[i]
 	}
-	return true, -1
+	return true
 }
 
 func CheckPlantReportWithDampening(report []int64) (safe bool) {
-	safe, problemIndex := CheckPlantReport(report)
-	if !safe {
-		new_report := RemoveIndex(report, problemIndex)
-		safe, _ = CheckPlantReport(new_report)
+	safe = CheckPlantReport(report)
+	if safe {
+		return true
 	}
-	return
+
+	for i := 0; i < len(report); i++ {
+		new_report := RemoveIndex(report, i)
+		safe = CheckPlantReport(new_report)
+		if safe {
+			return true
+		}
+	}
+	return false
 }
 
 func GetDiff(a int64, b int64) int64 {
