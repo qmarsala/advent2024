@@ -54,8 +54,9 @@ func ParseInput(input string) []Mul {
 		if input[i] == 'm' {
 			mul, skip := ReadMul(input[i:])
 			muls = append(muls, mul)
-			i += skip - 1
-			continue
+			if skip > 0 {
+				i += skip - 1
+			}
 		}
 	}
 	return muls
@@ -88,70 +89,19 @@ type Mul struct {
 }
 
 func ReadMul(input string) (mul Mul, charactersRead int) {
-	if len(input) < 8 {
-		return Mul{0, 0}, len(input)
+	expectedMulChars := map[int]rune{
+		0: 'm',
+		1: 'u',
+		2: 'l',
+		3: '(',
+		4: ',',
+		5: ')',
 	}
-	m := false
-	u := false
-	l := false
-	open := false
-	separator := false
-	var number1 int64 = 0
-	var number2 int64 = 0
-	var chars = make([]rune, 0)
-	for i := 0; i < len(input); i++ {
-		if i > 0 && !m || m && input[i] == 'm' {
-			return Mul{0, 0}, i
-		}
-		if i > 1 && !u || u && input[i] == 'u' {
-			return Mul{0, 0}, i
-		}
-		if i > 2 && !l || l && input[i] == 'l' {
-			return Mul{0, 0}, i
-		}
-		if i > 3 && !open || open && input[i] == '(' {
-			return Mul{0, 0}, i
-		}
-		if separator && input[i] == ',' {
-			return Mul{0, 0}, i
-		}
-		if input[i] == 'm' {
-			m = true
-			continue
-		}
-		if input[i] == 'u' {
-			u = true
-			continue
-		}
-		if input[i] == 'l' {
-			l = true
-			continue
-		}
-		if input[i] == '(' {
-			open = true
-			continue
-		}
-		if input[i] == ',' {
-			separator = true
-			n, err := strconv.ParseInt(string(chars), 10, 64)
-			chars = make([]rune, 0)
-			if err != nil {
-				return Mul{0, 0}, i
-			}
-			number1 = n
-			continue
-		}
-		if input[i] == ')' {
-			n, err := strconv.ParseInt(string(chars), 10, 64)
-			if err != nil {
-				return Mul{0, 0}, i
-			}
-			number2 = n
-			return Mul{number1, number2}, i
-		}
-		chars = append(chars, rune(input[i]))
+	found, values, charactersReadForMul := ReadToken(input, expectedMulChars, true)
+	if found {
+		return Mul{values[0], values[1]}, charactersReadForMul
 	}
-	return Mul{0, 0}, len(input)
+	return Mul{0, 0}, charactersReadForMul
 }
 
 func ReadDoOrDont(input string, currentState bool) (bool, int) {
@@ -161,7 +111,7 @@ func ReadDoOrDont(input string, currentState bool) (bool, int) {
 		2: '(',
 		3: ')',
 	}
-	do, charactersReadForDo := ReadToken(input, expectedDoChars)
+	do, _, charactersReadForDo := ReadToken(input, expectedDoChars, false)
 	if do {
 		return true, charactersReadForDo
 	}
@@ -175,27 +125,69 @@ func ReadDoOrDont(input string, currentState bool) (bool, int) {
 		5: '(',
 		6: ')',
 	}
-	dont, charactersReadForDont := ReadToken(input, expectedDontChars)
+	dont, _, charactersReadForDont := ReadToken(input, expectedDontChars, false)
 	if dont {
 		return false, charactersReadForDont
 	}
 	return currentState, charactersReadForDont
 }
 
-func ReadToken(input string, expectedChars map[int]rune) (found bool, charactersRead int) {
+func ReadToken(input string, expectedChars map[int]rune, captureParams bool) (found bool, values []int64, charactersRead int) {
 	if len(input) < len(expectedChars) {
-		return false, len(input)
+		return false, nil, len(input)
 	}
 	tokenLocation := 0
 	for i := 0; i < len(input); i++ {
 		if rune(input[i]) != expectedChars[tokenLocation] {
-			return false, i
+			return false, nil, i
+		}
+		if captureParams {
+			valid, params, skip := CaptureParams(input[i:])
+			if valid {
+				values = params
+				tokenLocation += 1
+			}
+			if skip > 0 {
+				i += skip - 1
+			}
 		}
 
 		tokenLocation += 1
 		if tokenLocation >= len(expectedChars) {
-			return true, i
+			return true, values, i
 		}
 	}
-	return false, len(input)
+	return false, nil, len(input)
+}
+
+func CaptureParams(input string) (validParams bool, values []int64, charsRead int) {
+	if input[0] != '(' {
+		return false, nil, 0
+	}
+
+	var capturedValues = make([]rune, 0)
+	for i := 1; i < len(input); i++ {
+		if input[i] == ',' {
+			num, _ := strconv.ParseInt(string(capturedValues), 10, 64)
+			values = append(values, num)
+			capturedValues = make([]rune, 0)
+			continue
+		} else if input[i] == ')' {
+			num, _ := strconv.ParseInt(string(capturedValues), 10, 64)
+			values = append(values, num)
+			if len(values) == 2 {
+				return true, values, i
+			} else {
+				return false, nil, i
+			}
+		}
+
+		_, err := strconv.ParseInt(string(input[i]), 10, 64)
+		if err != nil {
+			return false, nil, i
+		} else {
+			capturedValues = append(capturedValues, rune(input[i]))
+		}
+	}
+	return false, nil, len(input)
 }
