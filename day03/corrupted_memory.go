@@ -155,27 +155,36 @@ func ReadMul(input string) (mul Mul, charactersRead int) {
 }
 
 func ReadDoOrDont(input string, currentState bool) (bool, int) {
-	do, charactersReadForDo := ReadDo(input)
+	expectedDoChars := map[int]rune{
+		0: 'd',
+		1: 'o',
+		2: '(',
+		3: ')',
+	}
+	do, charactersReadForDo := ReadToken(input, expectedDoChars)
 	if do {
 		return true, charactersReadForDo
 	}
 
-	dont, charactersReadForDont := ReadDont(input)
+	expectedDontChars := map[int]rune{
+		0: 'd',
+		1: 'o',
+		2: 'n',
+		3: '\'',
+		4: 't',
+		5: '(',
+		6: ')',
+	}
+	dont, charactersReadForDont := ReadToken(input, expectedDontChars)
 	if dont {
 		return false, charactersReadForDont
 	}
 	return currentState, charactersReadForDont
 }
 
-func ReadDo(input string) (do bool, charactersRead int) {
-	if len(input) < 4 {
+func ReadToken(input string, expectedChars map[int]rune) (found bool, charactersRead int) {
+	if len(input) < len(expectedChars) {
 		return false, len(input)
-	}
-	expectedChars := map[int]rune{
-		0: 'd',
-		1: 'o',
-		2: '(',
-		3: ')',
 	}
 	tokenLocation := 0
 	for i := 0; i < len(input); i++ {
@@ -187,67 +196,6 @@ func ReadDo(input string) (do bool, charactersRead int) {
 		if tokenLocation >= len(expectedChars) {
 			return true, i
 		}
-	}
-	return false, len(input)
-}
-
-func ReadDont(input string) (dont bool, charactersRead int) {
-	if len(input) < 7 {
-		return false, len(input)
-	}
-	d := false
-	o := false
-	n := false
-	a := false
-	t := false
-	open := false
-	for i := 0; i < len(input); i++ {
-		if i > 0 && !d || d && input[i] == 'd' {
-			return false, i
-		}
-		if i > 1 && !o || o && input[i] == 'o' {
-			return false, i
-		}
-		if i > 2 && !n || n && input[i] == 'n' {
-			return false, i
-		}
-		if i > 3 && !a || a && input[i] == '\'' {
-			return false, i
-		}
-		if i > 4 && !t || t && input[i] == 't' {
-			return false, i
-		}
-		if i > 5 && !open || open && input[i] == '(' {
-			return false, i
-		}
-		if input[i] == 'd' {
-			d = true
-			continue
-		}
-		if input[i] == 'o' {
-			o = true
-			continue
-		}
-		if input[i] == 'n' {
-			n = true
-			continue
-		}
-		if input[i] == '\'' {
-			a = true
-			continue
-		}
-		if input[i] == 't' {
-			t = true
-			continue
-		}
-		if input[i] == '(' {
-			open = true
-			continue
-		}
-		if input[i] == ')' {
-			return true, i
-		}
-		return false, i
 	}
 	return false, len(input)
 }
