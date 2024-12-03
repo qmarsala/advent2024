@@ -65,17 +65,18 @@ func ParseInputDoDont(input string) []Mul {
 	var muls = make([]Mul, 0)
 	process := true
 	for i := 0; i < len(input); i++ {
+		skip := 0
 		if input[i] == 'd' {
-			newState, skip := ReadDoOrDont(input[i:], process)
+			newState, s := ReadDoOrDont(input[i:], process)
+			skip = s
 			process = newState
-			i += skip - 1
-			continue
-		}
-		if input[i] == 'm' && process {
-			mul, skip := ReadMul(input[i:])
+		} else if input[i] == 'm' && process {
+			mul, s := ReadMul(input[i:])
+			skip = s
 			muls = append(muls, mul)
+		}
+		if skip > 0 {
 			i += skip - 1
-			continue
 		}
 	}
 	return muls
@@ -170,35 +171,22 @@ func ReadDo(input string) (do bool, charactersRead int) {
 	if len(input) < 4 {
 		return false, len(input)
 	}
-	d := false
-	o := false
-	open := false
+	expectedChars := map[int]rune{
+		0: 'd',
+		1: 'o',
+		2: '(',
+		3: ')',
+	}
+	tokenLocation := 0
 	for i := 0; i < len(input); i++ {
-		if i > 0 && !d || d && input[i] == 'd' {
+		if rune(input[i]) != expectedChars[tokenLocation] {
 			return false, i
 		}
-		if i > 1 && !o || o && input[i] == 'o' {
-			return false, i
-		}
-		if i > 2 && !open || open && input[i] == '(' {
-			return false, i
-		}
-		if input[i] == 'd' {
-			d = true
-			continue
-		}
-		if input[i] == 'o' {
-			o = true
-			continue
-		}
-		if input[i] == '(' {
-			open = true
-			continue
-		}
-		if input[i] == ')' {
+
+		tokenLocation += 1
+		if tokenLocation >= len(expectedChars) {
 			return true, i
 		}
-		return false, i
 	}
 	return false, len(input)
 }
