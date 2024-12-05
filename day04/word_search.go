@@ -29,29 +29,22 @@ func ReadWordSearchInputs() (input [][]rune, err error) {
 }
 
 const (
-	left = iota
-	right
-	up
-	down
-	upRight
-	downRight
-	upLeft
-	downLeft
+	horizontal = iota
+	vertical
+	ascending
+	descending
 )
 
 func CountXMAS(input [][]rune) int {
 	xmasCount := 0
 	for row := 0; row < len(input); row++ {
 		for column := 0; column < len(input[row]); column++ {
-			if strings.ToLower(string(input[row][column])) == "x" {
-				xmasCount += ReadXMAS(input, row, column, left) +
-					ReadXMAS(input, row, column, right) +
-					ReadXMAS(input, row, column, up) +
-					ReadXMAS(input, row, column, down) +
-					ReadXMAS(input, row, column, upRight) +
-					ReadXMAS(input, row, column, upLeft) +
-					ReadXMAS(input, row, column, downRight) +
-					ReadXMAS(input, row, column, downLeft)
+			currentChar := strings.ToLower(string(input[row][column]))
+			if currentChar == "x" || currentChar == "s" {
+				xmasCount += ReadXMAS(input, row, column, horizontal) +
+					ReadXMAS(input, row, column, vertical) +
+					ReadXMAS(input, row, column, ascending) +
+					ReadXMAS(input, row, column, descending)
 			}
 		}
 	}
@@ -63,10 +56,8 @@ func CountXMAS2(input [][]rune) int {
 	for row := 0; row < len(input); row++ {
 		for column := 0; column < len(input[row]); column++ {
 			if strings.ToLower(string(input[row][column])) == "a" {
-				leftScore := ScoreXMAS(input, row, column, upRight) +
-					ScoreXMAS(input, row, column, downLeft)
-				rightScore := ScoreXMAS(input, row, column, downRight) +
-					ScoreXMAS(input, row, column, upLeft)
+				leftScore := ScoreXMAS(input, row, column, ascending)
+				rightScore := ScoreXMAS(input, row, column, descending)
 				if leftScore == 4 && rightScore == 4 {
 					xmasCount += 1
 				}
@@ -77,76 +68,34 @@ func CountXMAS2(input [][]rune) int {
 }
 
 func ReadXMAS(input [][]rune, startRow int, startColumn int, direction int) int {
-	currentMatch := 0
-	expectedXmasChars := map[int]rune{
-		0: 'x',
-		1: 'm',
-		2: 'a',
-		3: 's',
-	}
+	word := ""
 	for i := 0; i < 4; i++ {
 		switch direction {
-		case left:
-			if startRow >= len(input) || startColumn-i < 0 {
-				return 0
-			}
-			if input[startRow][startColumn-i] == expectedXmasChars[currentMatch] {
-				currentMatch += 1
-			}
-		case right:
+		case horizontal:
 			if startRow >= len(input) || startColumn+i >= len(input[startRow]) {
 				return 0
 			}
-			if input[startRow][startColumn+i] == expectedXmasChars[currentMatch] {
-				currentMatch += 1
-			}
-		case up:
-			if startRow-i < 0 || startColumn >= len(input[startRow]) {
+			word += string(input[startRow][startColumn+i])
+		case vertical:
+			if startRow+i >= len(input) || startColumn >= len(input[startRow]) {
 				return 0
 			}
-			if input[startRow-i][startColumn] == expectedXmasChars[currentMatch] {
-				currentMatch += 1
-			}
-		case down:
-			if startRow+i >= len(input[startRow]) || startColumn >= len(input[startRow]) {
+			word += string(input[startRow+i][startColumn])
+		case ascending:
+			if startRow+i >= len(input) || startColumn+i >= len(input[startRow]) {
 				return 0
 			}
-			if input[startRow+i][startColumn] == expectedXmasChars[currentMatch] {
-				currentMatch += 1
-			}
-		case upRight:
-			if startRow-i < 0 || startColumn+i >= len(input[startRow]) {
-				return 0
-			}
-			if input[startRow-i][startColumn+i] == expectedXmasChars[currentMatch] {
-				currentMatch += 1
-			}
-		case downRight:
-			if startRow+i >= len(input[startRow]) || startColumn+i >= len(input[startRow]) {
-				return 0
-			}
-			if input[startRow+i][startColumn+i] == expectedXmasChars[currentMatch] {
-				currentMatch += 1
-			}
-		case upLeft:
-			if startRow-i < 0 || startColumn-i < 0 {
-				return 0
-			}
-			if input[startRow-i][startColumn-i] == expectedXmasChars[currentMatch] {
-				currentMatch += 1
-			}
-		case downLeft:
+			word += string(input[startRow+i][startColumn+i])
+		case descending:
 			if startRow+i >= len(input) || startColumn-i < 0 {
 				return 0
 			}
-			if input[startRow+i][startColumn-i] == expectedXmasChars[currentMatch] {
-				currentMatch += 1
-			}
+			word += string(input[startRow+i][startColumn-i])
 		default:
 			return 0
 		}
 	}
-	if currentMatch == len(expectedXmasChars) {
+	if strings.ToLower(word) == "xmas" || strings.ToLower(word) == "samx" {
 		return 1
 	} else {
 		return 0
@@ -158,38 +107,36 @@ func ScoreXMAS(input [][]rune, startRow int, startColumn int, direction int) int
 		'm': 1,
 		's': 3,
 	}
-
+	score := 0
 	switch direction {
-	case upRight:
+	case ascending:
 		if startRow-1 < 0 || startColumn+1 >= len(input[startRow]) {
 			return 0
 		}
 		if v, ok := scores[input[startRow-1][startColumn+1]]; ok {
-			return v
+			score += v
 		}
-	case downRight:
-		if startRow+1 >= len(input[startRow]) || startColumn+1 >= len(input[startRow]) {
-			return 0
-		}
-		if v, ok := scores[input[startRow+1][startColumn+1]]; ok {
-			return v
-		}
-	case upLeft:
-		if startRow-1 < 0 || startColumn-1 < 0 {
-			return 0
-		}
-		if v, ok := scores[input[startRow-1][startColumn-1]]; ok {
-			return v
-		}
-	case downLeft:
 		if startRow+1 >= len(input) || startColumn-1 < 0 {
 			return 0
 		}
 		if v, ok := scores[input[startRow+1][startColumn-1]]; ok {
-			return v
+			score += v
+		}
+	case descending:
+		if startRow-1 < 0 || startColumn-1 < 0 {
+			return 0
+		}
+		if v, ok := scores[input[startRow-1][startColumn-1]]; ok {
+			score += v
+		}
+		if startRow+1 >= len(input) || startColumn+1 >= len(input[startRow]) {
+			return 0
+		}
+		if v, ok := scores[input[startRow+1][startColumn+1]]; ok {
+			score += v
 		}
 	default:
 		return 0
 	}
-	return 0
+	return score
 }
