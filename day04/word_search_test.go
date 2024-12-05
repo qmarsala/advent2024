@@ -7,7 +7,7 @@ import (
 
 // can I convert 2d to 1d? the offset my search by 'row length'?
 
-func TestCorruptedMemory(t *testing.T) {
+func TestWordSearch(t *testing.T) {
 	t.Run("xmas", func(t *testing.T) {
 		input := [][]rune{
 			{'x', 'm', 'a', 's'},
@@ -22,6 +22,7 @@ func TestCorruptedMemory(t *testing.T) {
 		input := [][]rune{
 			{'s', 'a', 'm', 'x'},
 		}
+		day04.ReadXMAS(input, 0, 3, 1)
 		result := day04.CountXMAS(input)
 		if result != 1 {
 			t.Errorf("expected 1, but got %v", result)
@@ -82,14 +83,15 @@ func TestCorruptedMemory(t *testing.T) {
 
 	t.Run("xmas vertical", func(t *testing.T) {
 		input := [][]rune{
-			{'x', '.', '.', '.'},
-			{'m', '.', '.', '.'},
-			{'a', '.', '.', '.'},
-			{'s', '.', '.', '.'},
+			{'x', 's', 's', 'x', 's'},
+			{'m', 'a', 'm', 'a', 'x'},
+			{'a', 'm', 'm', 's', 's'},
+			{'s', 'x', 'm', 'a', 's'},
+			{'s', 'x', 'm', 'a', 's'},
 		}
 		result := day04.CountXMAS(input)
-		if result != 1 {
-			t.Errorf("expected 1, but got %v", result)
+		if result != 5 {
+			t.Errorf("expected 5, but got %v", result)
 		}
 	})
 
@@ -108,16 +110,16 @@ func TestCorruptedMemory(t *testing.T) {
 
 	t.Run("xmas example", func(t *testing.T) {
 		input := [][]rune{
-			{'M', 'M', 'M', 'S', 'X', 'X', 'M', 'A', 'S', 'M'},
-			{'M', 'S', 'A', 'M', 'X', 'M', 'S', 'M', 'S', 'A'},
-			{'A', 'M', 'X', 'S', 'X', 'M', 'A', 'A', 'M', 'M'},
-			{'M', 'S', 'A', 'M', 'A', 'S', 'M', 'S', 'M', 'X'},
-			{'X', 'M', 'A', 'S', 'A', 'M', 'X', 'A', 'M', 'M'},
-			{'X', 'X', 'A', 'M', 'M', 'X', 'X', 'A', 'M', 'A'},
-			{'S', 'M', 'S', 'M', 'S', 'A', 'S', 'X', 'S', 'S'},
-			{'S', 'A', 'X', 'A', 'M', 'A', 'S', 'A', 'A', 'A'},
-			{'M', 'A', 'M', 'M', 'M', 'X', 'M', 'M', 'M', 'M'},
-			{'M', 'X', 'M', 'X', 'A', 'X', 'M', 'A', 'S', 'X'},
+			{'m', 'm', 'm', 's', 'x', 'x', 'm', 'a', 's', 'm'},
+			{'m', 's', 'a', 'm', 'x', 'm', 's', 'm', 's', 'a'},
+			{'a', 'm', 'x', 's', 'x', 'm', 'a', 'a', 'm', 'm'},
+			{'m', 's', 'a', 'm', 'a', 's', 'm', 's', 'm', 'x'},
+			{'x', 'm', 'a', 's', 'a', 'm', 'x', 'a', 'm', 'm'},
+			{'x', 'x', 'a', 'm', 'm', 'x', 'x', 'a', 'm', 'a'},
+			{'s', 'm', 's', 'm', 's', 'a', 's', 'x', 's', 's'},
+			{'s', 'a', 'x', 'a', 'm', 'a', 's', 'a', 'a', 'a'},
+			{'m', 'a', 'm', 'm', 'm', 'x', 'm', 'm', 'm', 'm'},
+			{'m', 'x', 'm', 'x', 'a', 'x', 'm', 'a', 's', 'x'},
 		}
 		result := day04.CountXMAS(input)
 		if result != 18 {
@@ -125,22 +127,22 @@ func TestCorruptedMemory(t *testing.T) {
 		}
 	})
 
-	t.Run("xmas example with .", func(t *testing.T) {
+	t.Run("x-mas", func(t *testing.T) {
 		input := [][]rune{
-			{'.', '.', '.', '.', 'X', 'X', 'M', 'A', 'S', '.'},
-			{'.', 'S', 'A', 'M', 'X', 'M', 'S', '.', '.', '.'},
-			{'.', '.', '.', 'S', '.', '.', 'A', '.', '.', '.'},
-			{'.', '.', 'A', '.', 'A', '.', 'M', 'S', '.', 'X'},
-			{'X', 'M', 'A', 'S', 'A', 'M', 'X', '.', 'M', 'M'},
-			{'X', '.', '.', '.', '.', '.', 'X', 'A', '.', 'A'},
-			{'S', '.', 'S', '.', 'S', '.', 'S', '.', 'S', 'S'},
-			{'.', 'A', '.', 'A', '.', 'A', '.', 'A', '.', 'A'},
-			{'.', '.', 'M', '.', 'M', '.', 'M', '.', 'M', 'M'},
-			{'.', 'X', '.', 'X', '.', 'X', 'M', 'A', 'S', 'X'},
+			{'.', 'm', '.', 's', '.', '.', '.', '.', '.', '.'},
+			{'.', '.', 'a', '.', '.', 'm', 's', 'm', 's', '.'},
+			{'.', 'm', '.', 's', '.', 'm', 'a', 'a', '.', '.'},
+			{'.', '.', 'a', '.', 'a', 's', 'm', 's', 'm', '.'},
+			{'.', 'm', '.', 's', '.', 'm', '.', '.', '.', '.'},
+			{'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
+			{'s', '.', 's', '.', 's', '.', 's', '.', 's', '.'},
+			{'.', 'a', '.', 'a', '.', 'a', '.', 'a', '.', '.'},
+			{'m', '.', 'm', '.', 'm', '.', 'm', '.', 'm', '.'},
+			{'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
 		}
 		result := day04.CountXMAS(input)
-		if result != 18 {
-			t.Errorf("expected 18, but got %v", result)
+		if result != 9 {
+			t.Errorf("expected 9, but got %v", result)
 		}
 	})
 

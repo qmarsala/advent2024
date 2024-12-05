@@ -23,7 +23,7 @@ func ReadWordSearchInputs() (input [][]rune, err error) {
 		return make([][]rune, 0), nil
 	}
 	for _, l := range lines {
-		input = append(input, []rune(l))
+		input = append(input, []rune(strings.ToLower(l)))
 	}
 	return input, nil
 }
@@ -44,71 +44,105 @@ func CountXMAS(input [][]rune) int {
 	for row := 0; row < len(input); row++ {
 		for column := 0; column < len(input[row]); column++ {
 			if strings.ToLower(string(input[row][column])) == "x" {
-				print(input[row])
-				if ReadXMAS(input, row, column, left) ||
-					ReadXMAS(input, row, column, right) ||
-					ReadXMAS(input, row, column, up) ||
-					ReadXMAS(input, row, column, down) ||
-					ReadXMAS(input, row, column, upRight) ||
-					ReadXMAS(input, row, column, upLeft) ||
-					ReadXMAS(input, row, column, downRight) ||
-					ReadXMAS(input, row, column, downLeft) {
-					xmasCount += 1
-				}
+				xmasCount += ReadXMAS(input, row, column, left) +
+					ReadXMAS(input, row, column, right) +
+					ReadXMAS(input, row, column, up) +
+					ReadXMAS(input, row, column, down) +
+					ReadXMAS(input, row, column, upRight) +
+					ReadXMAS(input, row, column, upLeft) +
+					ReadXMAS(input, row, column, downRight) +
+					ReadXMAS(input, row, column, downLeft)
 			}
 		}
 	}
 	return xmasCount
 }
 
-func ReadXMAS(input [][]rune, startRow int, startColumn int, direction int) bool {
-	word := ""
+func CountXMAS2(input [][]rune) int {
+	xmasCount := 0
+	for row := 0; row < len(input); row++ {
+		for column := 0; column < len(input[row]); column++ {
+			if strings.ToLower(string(input[row][column])) == "a" {
+
+			}
+		}
+	}
+	return xmasCount
+}
+
+func ReadXMAS(input [][]rune, startRow int, startColumn int, direction int) int {
+	currentMatch := 0
+	expectedXmasChars := map[int]rune{
+		0: 'x',
+		1: 'm',
+		2: 'a',
+		3: 's',
+	}
 	for i := 0; i < 4; i++ {
 		switch direction {
 		case left:
 			if startRow >= len(input) || startColumn-i < 0 {
-				return false
+				return 0
 			}
-			word += string(input[startRow][startColumn-i])
+			if input[startRow][startColumn-i] == expectedXmasChars[currentMatch] {
+				currentMatch += 1
+			}
 		case right:
 			if startRow >= len(input) || startColumn+i >= len(input[startRow]) {
-				return false
+				return 0
 			}
-			word += string(input[startRow][startColumn+i])
+			if input[startRow][startColumn+i] == expectedXmasChars[currentMatch] {
+				currentMatch += 1
+			}
 		case up:
 			if startRow-i < 0 || startColumn >= len(input[startRow]) {
-				return false
+				return 0
 			}
-			word += string(input[startRow-i][startColumn])
+			if input[startRow-i][startColumn] == expectedXmasChars[currentMatch] {
+				currentMatch += 1
+			}
 		case down:
 			if startRow+i >= len(input[startRow]) || startColumn >= len(input[startRow]) {
-				return false
+				return 0
 			}
-			word += string(input[startRow+i][startColumn])
+			if input[startRow+i][startColumn] == expectedXmasChars[currentMatch] {
+				currentMatch += 1
+			}
 		case upRight:
 			if startRow-i < 0 || startColumn+i >= len(input[startRow]) {
-				return false
+				return 0
 			}
-			word += string(input[startRow-i][startColumn+i])
+			if input[startRow-i][startColumn+i] == expectedXmasChars[currentMatch] {
+				currentMatch += 1
+			}
 		case downRight:
 			if startRow+i >= len(input[startRow]) || startColumn+i >= len(input[startRow]) {
-				return false
+				return 0
 			}
-			word += string(input[startRow+i][startColumn+i])
+			if input[startRow+i][startColumn+i] == expectedXmasChars[currentMatch] {
+				currentMatch += 1
+			}
 		case upLeft:
 			if startRow-i < 0 || startColumn-i < 0 {
-				return false
+				return 0
 			}
-			word += string(input[startRow-i][startColumn-i])
+			if input[startRow-i][startColumn-i] == expectedXmasChars[currentMatch] {
+				currentMatch += 1
+			}
 		case downLeft:
 			if startRow+i >= len(input) || startColumn-i < 0 {
-				return false
+				return 0
 			}
-			word += string(input[startRow+i][startColumn-i])
+			if input[startRow+i][startColumn-i] == expectedXmasChars[currentMatch] {
+				currentMatch += 1
+			}
 		default:
-			return false
+			return 0
 		}
 	}
-	lowerWord := strings.ToLower(string(word))
-	return lowerWord == "xmas"
+	if currentMatch == len(expectedXmasChars) {
+		return 1
+	} else {
+		return 0
+	}
 }
