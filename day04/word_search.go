@@ -29,21 +29,30 @@ func ReadWordSearchInputs() (input [][]rune, err error) {
 }
 
 const (
-	horizontal = iota
-	vertical
-	ascending
-	descending
+	left = iota
+	right
+	up
+	down
+	upRight
+	downRight
+	upLeft
+	downLeft
 )
 
 func CountXMAS(input [][]rune) int {
 	xmasCount := 0
 	for row := 0; row < len(input); row++ {
 		for column := 0; column < len(input[row]); column++ {
-			if strings.ToLower(string(input[row][column])) == "x" || strings.ToLower(string(input[row][column])) == "s" {
-				if ReadXMAS(input, row, column, horizontal) ||
-					ReadXMAS(input, row, column, vertical) ||
-					ReadXMAS(input, row, column, ascending) ||
-					ReadXMAS(input, row, column, descending) {
+			if strings.ToLower(string(input[row][column])) == "x" {
+				print(input[row])
+				if ReadXMAS(input, row, column, left) ||
+					ReadXMAS(input, row, column, right) ||
+					ReadXMAS(input, row, column, up) ||
+					ReadXMAS(input, row, column, down) ||
+					ReadXMAS(input, row, column, upRight) ||
+					ReadXMAS(input, row, column, upLeft) ||
+					ReadXMAS(input, row, column, downRight) ||
+					ReadXMAS(input, row, column, downLeft) {
 					xmasCount += 1
 				}
 			}
@@ -56,22 +65,42 @@ func ReadXMAS(input [][]rune, startRow int, startColumn int, direction int) bool
 	word := ""
 	for i := 0; i < 4; i++ {
 		switch direction {
-		case horizontal:
+		case left:
+			if startRow >= len(input) || startColumn-i < 0 {
+				return false
+			}
+			word += string(input[startRow][startColumn-i])
+		case right:
 			if startRow >= len(input) || startColumn+i >= len(input[startRow]) {
 				return false
 			}
 			word += string(input[startRow][startColumn+i])
-		case vertical:
-			if startRow+i >= len(input) || startColumn >= len(input[startRow]) {
+		case up:
+			if startRow-i < 0 || startColumn >= len(input[startRow]) {
+				return false
+			}
+			word += string(input[startRow-i][startColumn])
+		case down:
+			if startRow+i >= len(input[startRow]) || startColumn >= len(input[startRow]) {
 				return false
 			}
 			word += string(input[startRow+i][startColumn])
-		case ascending:
-			if startRow+i >= len(input) || startColumn+i >= len(input[startRow]) {
+		case upRight:
+			if startRow-i < 0 || startColumn+i >= len(input[startRow]) {
+				return false
+			}
+			word += string(input[startRow-i][startColumn+i])
+		case downRight:
+			if startRow+i >= len(input[startRow]) || startColumn+i >= len(input[startRow]) {
 				return false
 			}
 			word += string(input[startRow+i][startColumn+i])
-		case descending:
+		case upLeft:
+			if startRow-i < 0 || startColumn-i < 0 {
+				return false
+			}
+			word += string(input[startRow-i][startColumn-i])
+		case downLeft:
 			if startRow+i >= len(input) || startColumn-i < 0 {
 				return false
 			}
@@ -81,5 +110,5 @@ func ReadXMAS(input [][]rune, startRow int, startColumn int, direction int) bool
 		}
 	}
 	lowerWord := strings.ToLower(string(word))
-	return lowerWord == "xmas" || lowerWord == "samx"
+	return lowerWord == "xmas"
 }
