@@ -66,5 +66,9 @@ func ReadPrintOrderInputs() (orders []Order, updatedPages []int64, err error) {
 }
 
 func ScoreUpdates(orders []Order, updatedPages []int64) int {
-	return 0
+	len := len(updatedPages)
+	if len >= 3 {
+		return int(updatedPages[(len-1)/2])
+	}
+	return int(updatedPages[0])
 }
