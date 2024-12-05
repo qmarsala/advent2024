@@ -13,7 +13,7 @@ func RunDay() {
 		return
 	}
 	part1 := CountXMAS(input)
-	part2 := 0
+	part2 := CountXMAS2(input)
 	fmt.Printf("Day04: %v, %v \n", part1, part2)
 }
 
@@ -63,7 +63,13 @@ func CountXMAS2(input [][]rune) int {
 	for row := 0; row < len(input); row++ {
 		for column := 0; column < len(input[row]); column++ {
 			if strings.ToLower(string(input[row][column])) == "a" {
-
+				leftScore := ScoreXMAS(input, row, column, upRight) +
+					ScoreXMAS(input, row, column, downLeft)
+				rightScore := ScoreXMAS(input, row, column, downRight) +
+					ScoreXMAS(input, row, column, upLeft)
+				if leftScore == 4 && rightScore == 4 {
+					xmasCount += 1
+				}
 			}
 		}
 	}
@@ -145,4 +151,45 @@ func ReadXMAS(input [][]rune, startRow int, startColumn int, direction int) int 
 	} else {
 		return 0
 	}
+}
+
+func ScoreXMAS(input [][]rune, startRow int, startColumn int, direction int) int {
+	scores := map[rune]int{
+		'm': 1,
+		's': 3,
+	}
+
+	switch direction {
+	case upRight:
+		if startRow-1 < 0 || startColumn+1 >= len(input[startRow]) {
+			return 0
+		}
+		if v, ok := scores[input[startRow-1][startColumn+1]]; ok {
+			return v
+		}
+	case downRight:
+		if startRow+1 >= len(input[startRow]) || startColumn+1 >= len(input[startRow]) {
+			return 0
+		}
+		if v, ok := scores[input[startRow+1][startColumn+1]]; ok {
+			return v
+		}
+	case upLeft:
+		if startRow-1 < 0 || startColumn-1 < 0 {
+			return 0
+		}
+		if v, ok := scores[input[startRow-1][startColumn-1]]; ok {
+			return v
+		}
+	case downLeft:
+		if startRow+1 >= len(input) || startColumn-1 < 0 {
+			return 0
+		}
+		if v, ok := scores[input[startRow+1][startColumn-1]]; ok {
+			return v
+		}
+	default:
+		return 0
+	}
+	return 0
 }
