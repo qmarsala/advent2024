@@ -15,7 +15,7 @@ func RunDay() {
 		return
 	}
 	part1 := ScoreValidUpdates(orders, updatedPages)
-	part2 := 0
+	part2 := ScoreInValidUpdates(orders, updatedPages)
 	fmt.Printf("Day05: %v, %v \n", part1, part2)
 }
 
@@ -71,15 +71,10 @@ func ReadPrintOrderInputs() (orders []Order, updatedPages [][]int64, err error) 
 func ScoreValidUpdates(orders []Order, updatedPages [][]int64) int {
 	score := 0
 	for _, p := range updatedPages {
-		if !ValidateUpdate(orders, p) {
+		if valid, _ := ValidateUpdate(orders, p); !valid {
 			continue
 		}
-		len := len(p)
-		if len >= 3 {
-			score += int(p[(len-1)/2])
-		} else {
-			score += int(p[0])
-		}
+		score += GetMiddle(p)
 	}
 
 	return score
@@ -88,26 +83,61 @@ func ScoreValidUpdates(orders []Order, updatedPages [][]int64) int {
 func ScoreInValidUpdates(orders []Order, updatedPages [][]int64) int {
 	score := 0
 	for _, p := range updatedPages {
-		if !ValidateUpdate(orders, p) {
+		if valid, containsOrders := ValidateUpdate(orders, p); valid || len(containsOrders) < 1 {
 			continue
-		}
-		len := len(p)
-		if len >= 3 {
-			score += int(p[(len-1)/2])
 		} else {
-			score += int(p[0])
+			fixedOrder := SortUpdates(containsOrders, p)
+			score += GetMiddle(fixedOrder)
 		}
 	}
 
 	return score
 }
 
-func ValidateUpdate(order []Order, updatedPage []int64) bool {
-	valid := true
+func GetMiddle(list []int64) int {
+	len := len(list)
+	if len >= 3 {
+		return int(list[(len-1)/2])
+	} else {
+		return int(list[0])
+	}
+}
+
+func SortUpdates(orders []Order, page []int64) []int64 {
+	newList := []int64{}
+	for i, p := range page {
+		index := GetBeforeIndex(orders, newList, p, i)
+		newList = slices.Insert(newList, index, p)
+	}
+	if v, _ := ValidateUpdate(orders, newList); v {
+		return newList
+	} else {
+		return SortUpdates(orders, newList)
+	}
+}
+
+func GetBeforeIndex(orders []Order, list []int64, value int64, defaultIndex int) int {
+	for _, o := range orders {
+		if o.Value != value {
+			continue
+		}
+
+		index := slices.Index(list, o.Before)
+		if index > -1 {
+			return index
+		}
+	}
+	return defaultIndex
+}
+
+func ValidateUpdate(order []Order, updatedPage []int64) (valid bool, containsOrders []Order) {
+	valid = true
+	containsOrders = []Order{}
 	for _, o := range order {
 		if slices.Contains(updatedPage, o.Value) && slices.Contains(updatedPage, o.Before) {
+			containsOrders = append(containsOrders, o)
 			valid = valid && slices.Index(updatedPage, o.Value) < slices.Index(updatedPage, o.Before)
 		}
 	}
-	return valid
+	return valid, containsOrders
 }
