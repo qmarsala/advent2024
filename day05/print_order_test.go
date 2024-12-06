@@ -21,7 +21,7 @@ func TestPrintOrder(t *testing.T) {
 				Before: 4,
 			},
 		}
-		pages := []int64{1, 2, 3}
+		pages := [][]int64{{1, 2, 3}}
 		result := day05.ScoreUpdates(orders, pages)
 		if result != 2 {
 			t.Errorf("expected 2, but got %v", result)
@@ -115,7 +115,14 @@ func TestPrintOrder(t *testing.T) {
 				Before: 13,
 			},
 		}
-		pages := []int64{75, 47, 61, 53, 29, 97, 61, 53, 29, 13, 75, 29, 13, 75, 97, 47, 61, 53, 61, 13, 29, 97, 13, 75, 29, 47}
+		pages := [][]int64{
+			{75, 47, 61, 53, 29},
+			{97, 61, 53, 29, 13},
+			{75, 29, 13},
+			{75, 97, 47, 61, 53},
+			{61, 13, 29},
+			{97, 13, 75, 29, 47},
+		}
 		result := day05.ScoreUpdates(orders, pages)
 		if result != 143 {
 			t.Errorf("expected 143, but got %v", result)

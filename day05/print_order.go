@@ -23,10 +23,10 @@ type Order struct {
 	Before int64
 }
 
-func ReadPrintOrderInputs() (orders []Order, updatedPages []int64, err error) {
+func ReadPrintOrderInputs() (orders []Order, updatedPages [][]int64, err error) {
 	lines, err := fileio.ReadAllLines("./day05/input.txt")
 	if err != nil {
-		return make([]Order, 0), make([]int64, 0), err
+		return make([]Order, 0), make([][]int64, 0), err
 	}
 	readingOrder := true
 	for _, l := range lines {
@@ -53,22 +53,24 @@ func ReadPrintOrderInputs() (orders []Order, updatedPages []int64, err error) {
 			orders = append(orders, newOrder)
 		} else {
 			pages := strings.Split(l, ",")
+			values := []int64{}
 			for _, p := range pages {
 				if value, err := strconv.ParseInt(p, 10, 64); err != nil {
 					return nil, nil, err
 				} else {
-					updatedPages = append(updatedPages, value)
+					values = append(values, value)
 				}
 			}
+			updatedPages = append(updatedPages, values)
 		}
 	}
 	return orders, updatedPages, nil
 }
 
-func ScoreUpdates(orders []Order, updatedPages []int64) int {
-	len := len(updatedPages)
+func ScoreUpdates(orders []Order, updatedPages [][]int64) int {
+	len := len(updatedPages[0])
 	if len >= 3 {
-		return int(updatedPages[(len-1)/2])
+		return int(updatedPages[0][(len-1)/2])
 	}
-	return int(updatedPages[0])
+	return int(updatedPages[0][0])
 }
