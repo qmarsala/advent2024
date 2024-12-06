@@ -3,6 +3,7 @@ package day05
 import (
 	"advent2024/fileio"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -13,7 +14,7 @@ func RunDay() {
 		fmt.Printf("Day05 - [ERROR]: %v\n", err)
 		return
 	}
-	part1 := ScoreUpdates(orders, updatedPages)
+	part1 := ScoreValidUpdates(orders, updatedPages)
 	part2 := 0
 	fmt.Printf("Day05: %v, %v \n", part1, part2)
 }
@@ -67,10 +68,46 @@ func ReadPrintOrderInputs() (orders []Order, updatedPages [][]int64, err error) 
 	return orders, updatedPages, nil
 }
 
-func ScoreUpdates(orders []Order, updatedPages [][]int64) int {
-	len := len(updatedPages[0])
-	if len >= 3 {
-		return int(updatedPages[0][(len-1)/2])
+func ScoreValidUpdates(orders []Order, updatedPages [][]int64) int {
+	score := 0
+	for _, p := range updatedPages {
+		if !ValidateUpdate(orders, p) {
+			continue
+		}
+		len := len(p)
+		if len >= 3 {
+			score += int(p[(len-1)/2])
+		} else {
+			score += int(p[0])
+		}
 	}
-	return int(updatedPages[0][0])
+
+	return score
+}
+
+func ScoreInValidUpdates(orders []Order, updatedPages [][]int64) int {
+	score := 0
+	for _, p := range updatedPages {
+		if !ValidateUpdate(orders, p) {
+			continue
+		}
+		len := len(p)
+		if len >= 3 {
+			score += int(p[(len-1)/2])
+		} else {
+			score += int(p[0])
+		}
+	}
+
+	return score
+}
+
+func ValidateUpdate(order []Order, updatedPage []int64) bool {
+	valid := true
+	for _, o := range order {
+		if slices.Contains(updatedPage, o.Value) && slices.Contains(updatedPage, o.Before) {
+			valid = valid && slices.Index(updatedPage, o.Value) < slices.Index(updatedPage, o.Before)
+		}
+	}
+	return valid
 }

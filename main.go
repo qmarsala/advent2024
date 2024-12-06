@@ -5,6 +5,7 @@ import (
 	"advent2024/day02"
 	"advent2024/day03"
 	"advent2024/day04"
+	"advent2024/day05"
 	"fmt"
 )
 
@@ -14,4 +15,5 @@ func main() {
 	day02.RunDay()
 	day03.RunDay()
 	day04.RunDay()
+	day05.RunDay()
 }

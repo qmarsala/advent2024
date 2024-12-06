@@ -22,13 +22,79 @@ func TestPrintOrder(t *testing.T) {
 			},
 		}
 		pages := [][]int64{{1, 2, 3}}
-		result := day05.ScoreUpdates(orders, pages)
+		result := day05.ScoreValidUpdates(orders, pages)
 		if result != 2 {
 			t.Errorf("expected 2, but got %v", result)
 		}
 	})
 
 	t.Run("Scores Middle", func(t *testing.T) {
+		orders := []day05.Order{
+			{
+				Value:  1,
+				Before: 2,
+			},
+			{
+				Value:  2,
+				Before: 3,
+			},
+			{
+				Value:  3,
+				Before: 4,
+			},
+		}
+		pages := [][]int64{{1, 2, 3}, {1, 2, 3}}
+		result := day05.ScoreValidUpdates(orders, pages)
+		if result != 4 {
+			t.Errorf("expected 4, but got %v", result)
+		}
+	})
+
+	t.Run("Scores Middle ignoring invalid", func(t *testing.T) {
+		orders := []day05.Order{
+			{
+				Value:  1,
+				Before: 2,
+			},
+			{
+				Value:  2,
+				Before: 3,
+			},
+			{
+				Value:  3,
+				Before: 4,
+			},
+		}
+		pages := [][]int64{{1, 2, 3}, {1, 3, 2}}
+		result := day05.ScoreValidUpdates(orders, pages)
+		if result != 2 {
+			t.Errorf("expected 2, but got %v", result)
+		}
+	})
+
+	t.Run("Scores Middle When not valid", func(t *testing.T) {
+		orders := []day05.Order{
+			{
+				Value:  1,
+				Before: 2,
+			},
+			{
+				Value:  2,
+				Before: 3,
+			},
+			{
+				Value:  4,
+				Before: 3,
+			},
+		}
+		pages := [][]int64{{1, 2, 3}, {1, 3, 4}}
+		result := day05.ScoreInValidUpdates(orders, pages)
+		if result != 4 {
+			t.Errorf("expected 4, but got %v", result)
+		}
+	})
+
+	t.Run("Scores Middle Example Input", func(t *testing.T) {
 		orders := []day05.Order{
 			{
 				Value:  47,
@@ -123,7 +189,7 @@ func TestPrintOrder(t *testing.T) {
 			{61, 13, 29},
 			{97, 13, 75, 29, 47},
 		}
-		result := day05.ScoreUpdates(orders, pages)
+		result := day05.ScoreValidUpdates(orders, pages)
 		if result != 143 {
 			t.Errorf("expected 143, but got %v", result)
 		}
