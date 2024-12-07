@@ -7,6 +7,7 @@ import (
 	"advent2024/day04"
 	"advent2024/day05"
 	"advent2024/day06"
+	"advent2024/day07"
 	"fmt"
 	"time"
 )
@@ -25,6 +26,7 @@ func main() {
 		{RunDay: day04.RunDay, Name: "Day 04"},
 		{RunDay: day05.RunDay, Name: "Day 05"},
 		{RunDay: day06.RunDay, Name: "Day 06"},
+		{RunDay: day07.RunDay, Name: "Day 07"},
 	}
 	profile("All Days", func() {
 		for _, d := range days {

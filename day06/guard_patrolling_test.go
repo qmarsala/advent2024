@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func Test(t *testing.T) {
+func TestGuardPatrol(t *testing.T) {
 	t.Run("example", func(t *testing.T) {
 		tiles := [][]string{
 			{".", ".", ".", ".", "#", ".", ".", ".", ".", "."},
