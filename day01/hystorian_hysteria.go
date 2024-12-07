@@ -10,31 +10,34 @@ import (
 )
 
 func RunDay() {
-	listA, listB, err := ReadHistorianHysteriaInput()
+	input, err := ReadHistorianHysteriaInput()
 	if err != nil {
 		fmt.Printf("Day01 - [ERROR]: %v\n", err)
 		return
 	}
 
-	diff := HistorianHysteriaDifference(listA, listB)
-	sim := HistorianHysteriaSimilarity(listA, listB)
+	diff := HistorianHysteriaDifference(input.ListA, input.ListB)
+	sim := HistorianHysteriaSimilarity(input.ListA, input.ListB)
 	fmt.Printf("Day01: %v, %v \n", diff, sim)
 }
 
-func ReadHistorianHysteriaInput() (listA []int64, listB []int64, err error) {
-	lines, err := fileio.ReadAllLines("./day01/input.txt")
-	if err != nil {
-		return nil, nil, err
-	}
+type HistorianHysteriaInput struct {
+	ListA []int64
+	ListB []int64
+}
 
-	for _, line := range lines {
+func ReadHistorianHysteriaInput() (input HistorianHysteriaInput, err error) {
+	err = fileio.ParseAllLines("./day01/input.txt", func(line string) {
 		parts := strings.Split(line, "   ")
 		valueA, _ := strconv.ParseInt(parts[0], 10, 64)
 		valueB, _ := strconv.ParseInt(parts[1], 10, 64)
-		listA = append(listA, valueA)
-		listB = append(listB, valueB)
+		input.ListA = append(input.ListA, valueA)
+		input.ListB = append(input.ListB, valueB)
+	})
+	if err != nil {
+		return HistorianHysteriaInput{}, err
 	}
-	return listA, listB, nil
+	return input, nil
 }
 
 func HistorianHysteriaDifference(listA []int64, listB []int64) int64 {

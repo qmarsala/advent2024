@@ -19,13 +19,12 @@ func RunDay() {
 }
 
 func ReadCorruptedMemoryInputs() (input string, err error) {
-	lines, err := fileio.ReadAllLines("./day03/input.txt")
+	var sb strings.Builder
+	err = fileio.ParseAllLines("./day03/input.txt", func(line string) {
+		sb.WriteString(line)
+	})
 	if err != nil {
 		return "", err
-	}
-	var sb strings.Builder
-	for _, l := range lines {
-		sb.WriteString(l)
 	}
 	return sb.String(), nil
 }

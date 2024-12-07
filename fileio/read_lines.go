@@ -6,11 +6,11 @@ import (
 	"os"
 )
 
-func ReadAllLines(path string) (lines []string, err error) {
+func ParseAllLines(path string, parseFn func(string)) (err error) {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
-		return nil, err
+		return err
 	}
 	defer func() {
 		if err = file.Close(); err != nil {
@@ -20,7 +20,7 @@ func ReadAllLines(path string) (lines []string, err error) {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		parseFn(scanner.Text())
 	}
-	return
+	return nil
 }

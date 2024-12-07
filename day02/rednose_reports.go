@@ -20,12 +20,7 @@ func RunDay() {
 }
 
 func ReadRedNosedReportInputs() (reports [][]int64, err error) {
-	lines, err := fileio.ReadAllLines("./day02/input.txt")
-	if err != nil {
-		return nil, err
-	}
-
-	for _, line := range lines {
+	err = fileio.ParseAllLines("./day02/input.txt", func(line string) {
 		values := strings.Split(line, " ")
 		report := []int64{}
 		for _, v := range values {
@@ -33,6 +28,9 @@ func ReadRedNosedReportInputs() (reports [][]int64, err error) {
 			report = append(report, value)
 		}
 		reports = append(reports, report)
+	})
+	if err != nil {
+		return nil, err
 	}
 	return reports, nil
 }

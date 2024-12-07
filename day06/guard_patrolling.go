@@ -18,13 +18,12 @@ func RunDay() {
 }
 
 func ReadGuardPatrolInputs() (world World, err error) {
-	lines, err := fileio.ReadAllLines("./day06/input.txt")
 	tiles := [][]string{}
+	err = fileio.ParseAllLines("./day06/input.txt", func(line string) {
+		tiles = append(tiles, strings.Split(line, ""))
+	})
 	if err != nil {
 		return World{}, err
-	}
-	for _, l := range lines {
-		tiles = append(tiles, strings.Split(l, ""))
 	}
 	if len(tiles) < 2 {
 		return World{}, fmt.Errorf("not enough input rows")

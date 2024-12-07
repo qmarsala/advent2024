@@ -18,12 +18,11 @@ func RunDay() {
 }
 
 func ReadWordSearchInputs() (input [][]rune, err error) {
-	lines, err := fileio.ReadAllLines("./day04/input.txt")
+	err = fileio.ParseAllLines("./day04/input.txt", func(line string) {
+		input = append(input, []rune(strings.ToLower(line)))
+	})
 	if err != nil {
 		return make([][]rune, 0), err
-	}
-	for _, l := range lines {
-		input = append(input, []rune(strings.ToLower(l)))
 	}
 	return input, nil
 }
