@@ -6,6 +6,16 @@ import (
 )
 
 func TestBridgeRepair(t *testing.T) {
+	t.Run("simple equation", func(t *testing.T) {
+		input := map[int64][]int64{
+			2: {1, 1},
+		}
+		result := day07.SumSolvableEquations(input)
+		if result != 1 {
+			t.Errorf("expected 1, but got %v", result)
+		}
+	})
+
 	t.Run("example", func(t *testing.T) {
 		input := map[int64][]int64{
 			190:    {10, 19},
