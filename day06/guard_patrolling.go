@@ -13,7 +13,7 @@ func RunDay() {
 		return
 	}
 	part1 := CalculateTilesWalked(input)
-	part2 := 0
+	part2 := CalculateLoopablePositions(input)
 	fmt.Printf("Day06: %v, %v \n", part1, part2)
 }
 
@@ -69,6 +69,58 @@ func CalculateTilesWalked(world World) int {
 		return 0
 	}
 	return len(visitedLocations) - 1
+}
+
+func CalculateLoopablePositions(world World) int {
+	visitedLocations := map[Location]int{}
+	loopCount := 0
+	if found, startingPosition, startingOrientation := FindGuard(world); found {
+		visitedLocations[startingPosition] = 1
+		loopDetected := false
+		finished := false
+		for y := 0; y < world.Height; y++ {
+			for x := 0; x < world.Width; x++ {
+				if x == startingPosition.X && y == startingPosition.Y || world.Tiles[y][x] == "#" {
+					continue
+				}
+				newWorld := CopyWorld(world)
+				newWorld.Tiles[y][x] = "#"
+				currentPosition := startingPosition
+				currentOrientation := startingOrientation
+				for !(finished || loopDetected) {
+					finished, currentPosition, currentOrientation = Move(
+						newWorld,
+						currentPosition,
+						currentOrientation)
+					visitedLocations[currentPosition] += 1
+					loopDetected = visitedLocations[currentPosition] > 5
+				}
+				if loopDetected {
+					loopCount += 1
+				}
+				visitedLocations = map[Location]int{}
+				loopDetected = false
+				finished = false
+			}
+		}
+	} else {
+		return 0
+	}
+	return loopCount
+}
+
+func CopyWorld(world World) World {
+	newTiles := [][]string{}
+	for _, r := range world.Tiles {
+		newRow := make([]string, world.Width)
+		copy(newRow, r)
+		newTiles = append(newTiles, newRow)
+	}
+	return World{
+		Height: world.Height,
+		Width:  world.Width,
+		Tiles:  newTiles,
+	}
 }
 
 func FindGuard(world World) (found bool, loc Location, orientation Direction) {
