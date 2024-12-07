@@ -7,12 +7,12 @@ import (
 )
 
 func RunDay() {
-	_, err := ReadGuardPatrolInputs()
+	input, err := ReadGuardPatrolInputs()
 	if err != nil {
 		fmt.Printf("Day06 - [ERROR]: %v\n", err)
 		return
 	}
-	part1 := 0
+	part1 := CalculateTilesWalked(input)
 	part2 := 0
 	fmt.Printf("Day06: %v, %v \n", part1, part2)
 }
@@ -56,34 +56,43 @@ const (
 	west
 )
 
-func CalculateTilesWalked(world [][]string) int {
-	if found, _, _ := FindGuard(world); !found {
+func CalculateTilesWalked(world World) int {
+	visitedLocations := map[Location]int{}
+	if found, currentPosition, currentOrientation := FindGuard(world); found {
+		visitedLocations[currentPosition] = 1
+		finished := false
+		for !finished {
+			finished, currentPosition, currentOrientation = Move(world, currentPosition, currentOrientation)
+			visitedLocations[currentPosition] += 1
+		}
+	} else {
 		return 0
 	}
-	return 0
+	return len(visitedLocations) - 1
 }
 
-func FindGuard(world [][]string) (found bool, loc Location, orientation Direction) {
-	for i := 0; i < len(world); i++ {
-		for j := 0; j < len(world[i]); j++ {
-			if world[i][j] == "^" {
-				return true, Location{X: j, Y: i}, north
+func FindGuard(world World) (found bool, loc Location, orientation Direction) {
+	for y := 0; y < world.Height; y++ {
+		for x := 0; x < world.Width; x++ {
+			if world.Tiles[y][x] == "^" {
+				return true, Location{X: x, Y: y}, north
 			}
-			if world[i][j] == ">" {
-				return true, Location{X: j, Y: i}, east
+			if world.Tiles[y][x] == ">" {
+				return true, Location{X: x, Y: y}, east
 			}
-			if world[i][j] == "v" {
-				return true, Location{X: j, Y: i}, south
+			if world.Tiles[y][x] == "v" {
+				return true, Location{X: x, Y: y}, south
 			}
-			if world[i][j] == "v" {
-				return true, Location{X: j, Y: i}, west
+			if world.Tiles[y][x] == "v" {
+				return true, Location{X: x, Y: y}, west
 			}
 		}
 	}
 	return false, Location{}, -1
 }
 
-func Move(world [][]string, currentPosition Location, currentOrientation Direction) (finished bool, endLoc Location, endOrientation Direction) {
+// could we scan a whole row or column at once?
+func Move(world World, currentPosition Location, currentOrientation Direction) (finished bool, endLoc Location, endOrientation Direction) {
 	newPosition := Location{X: 0, Y: 0}
 	switch currentOrientation {
 	case north:
@@ -95,10 +104,22 @@ func Move(world [][]string, currentPosition Location, currentOrientation Directi
 	case west:
 		newPosition = MoveWest(currentPosition)
 	}
-	fmt.Println(newPosition)
-	//todo: validate pos in bounds
-	//todo: turn if new pos would be #
-	return false, Location{}, -1
+	if newPosition.Y >= 0 && newPosition.Y < world.Height && newPosition.X >= 0 && newPosition.X < world.Width {
+		if world.Tiles[newPosition.Y][newPosition.X] == "#" {
+			return false, currentPosition, RotateGuard(currentOrientation)
+		}
+		return false, newPosition, currentOrientation
+	} else {
+		return true, newPosition, currentOrientation
+	}
+}
+
+func RotateGuard(currentOrientation Direction) Direction {
+	newOrientation := currentOrientation + 1
+	if newOrientation > west {
+		newOrientation = north
+	}
+	return newOrientation
 }
 
 func MoveNorth(currentPosition Location) (endLoc Location) {

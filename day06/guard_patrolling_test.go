@@ -6,8 +6,8 @@ import (
 )
 
 func Test(t *testing.T) {
-	t.Run("todo", func(t *testing.T) {
-		world := [][]string{
+	t.Run("example", func(t *testing.T) {
+		tiles := [][]string{
 			{".", ".", ".", ".", "#", ".", ".", ".", ".", "."},
 			{".", ".", ".", ".", ".", ".", ".", ".", ".", "#"},
 			{".", ".", ".", ".", ".", ".", ".", ".", ".", "."},
@@ -19,10 +19,14 @@ func Test(t *testing.T) {
 			{"#", ".", ".", ".", ".", ".", ".", ".", ".", "."},
 			{".", ".", ".", ".", ".", ".", "#", ".", ".", "."},
 		}
+		world := day06.World{
+			Tiles:  tiles,
+			Height: len(tiles),
+			Width:  len(tiles[0]),
+		}
 		result := day06.CalculateTilesWalked(world)
 		if result != 41 {
 			t.Errorf("expected 41, but got %v", result)
 		}
 	})
-
 }

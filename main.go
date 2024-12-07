@@ -6,7 +6,9 @@ import (
 	"advent2024/day03"
 	"advent2024/day04"
 	"advent2024/day05"
+	"advent2024/day06"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -16,4 +18,9 @@ func main() {
 	day03.RunDay()
 	day04.RunDay()
 	day05.RunDay()
+	start := time.Now()
+	day06.RunDay()
+	end := time.Now()
+	elapsed := end.Sub(start)
+	fmt.Printf("%v", elapsed)
 }
