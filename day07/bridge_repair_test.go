@@ -11,8 +11,8 @@ func TestBridgeRepair(t *testing.T) {
 			2: {1, 1},
 		}
 		result := day07.SumSolvableEquations(input)
-		if result != 1 {
-			t.Errorf("expected 1, but got %v", result)
+		if result != 2 {
+			t.Errorf("expected 2, but got %v", result)
 		}
 	})
 
@@ -29,8 +29,8 @@ func TestBridgeRepair(t *testing.T) {
 			292:    {11, 6, 16, 20},
 		}
 		result := day07.SumSolvableEquations(input)
-		if result != 1 {
-			t.Errorf("expected 1, but got %v", result)
+		if result != 3749 {
+			t.Errorf("expected 3749, but got %v", result)
 		}
 	})
 }
