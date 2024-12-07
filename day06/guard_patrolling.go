@@ -57,6 +57,11 @@ const (
 )
 
 func CalculateTilesWalked(world World) int {
+	visitedLocations := Patrol(world)
+	return len(visitedLocations) - 1
+}
+
+func Patrol(world World) map[Location]int {
 	visitedLocations := map[Location]int{}
 	if found, currentPosition, currentOrientation := FindGuard(world); found {
 		visitedLocations[currentPosition] = 1
@@ -65,28 +70,35 @@ func CalculateTilesWalked(world World) int {
 			finished, currentPosition, currentOrientation = Move(world, currentPosition, currentOrientation)
 			visitedLocations[currentPosition] += 1
 		}
-	} else {
-		return 0
 	}
-	return len(visitedLocations) - 1
+	return visitedLocations
 }
 
 func CalculateLoopablePositions(world World) int {
+	route := Patrol(world)
 	visitedLocations := map[Location]int{}
 	loopCount := 0
 	if found, startingPosition, startingOrientation := FindGuard(world); found {
 		visitedLocations[startingPosition] = 1
-		loopDetected := false
-		finished := false
 		for y := 0; y < world.Height; y++ {
 			for x := 0; x < world.Width; x++ {
 				if x == startingPosition.X && y == startingPosition.Y || world.Tiles[y][x] == "#" {
 					continue
 				}
+				_, westOfRoute := route[Location{X: x - 1, Y: y}]
+				_, eastOfRoute := route[Location{X: x + 1, Y: y}]
+				_, northOfRoute := route[Location{X: x, Y: y - 1}]
+				_, southOfRoute := route[Location{X: x, Y: y + 1}]
+				if !(westOfRoute || eastOfRoute || northOfRoute || southOfRoute) {
+					continue
+				}
+
 				newWorld := CopyWorld(world)
 				newWorld.Tiles[y][x] = "#"
 				currentPosition := startingPosition
 				currentOrientation := startingOrientation
+				loopDetected := false
+				finished := false
 				for !(finished || loopDetected) {
 					finished, currentPosition, currentOrientation = Move(
 						newWorld,
@@ -99,8 +111,7 @@ func CalculateLoopablePositions(world World) int {
 					loopCount += 1
 				}
 				visitedLocations = map[Location]int{}
-				loopDetected = false
-				finished = false
+				visitedLocations[startingPosition] = 1
 			}
 		}
 	} else {
