@@ -75,13 +75,23 @@ func Patrol(world World) map[Location]int {
 }
 
 func CalculateLoopablePositions(world World) int {
-	route := Patrol(world)
-	visitedLocations := map[Location]int{}
+	c := make(chan int)
+	go CalculateLoopablePositionsInArea(world, 0, world.Width/2, 0, world.Height/2, c)
+	go CalculateLoopablePositionsInArea(world, (world.Width / 2), world.Width, 0, world.Height/2, c)
+	go CalculateLoopablePositionsInArea(world, 0, world.Width/2, world.Height/2, world.Height, c)
+	go CalculateLoopablePositionsInArea(world, (world.Width / 2), world.Width, world.Height/2, world.Height, c)
+	topLeft, topRight, bottomLeft, bottomRight := <-c, <-c, <-c, <-c
+	return topLeft + topRight + bottomLeft + bottomRight
+}
+
+func CalculateLoopablePositionsInArea(world World, startX int, endX int, startY int, endY int, c chan int) int {
 	loopCount := 0
 	if found, startingPosition, startingOrientation := FindGuard(world); found {
+		route := Patrol(world)
+		visitedLocations := map[Location]int{}
 		visitedLocations[startingPosition] = 1
-		for y := 0; y < world.Height; y++ {
-			for x := 0; x < world.Width; x++ {
+		for y := startY; y < endY; y++ {
+			for x := startX; x < endX; x++ {
 				if x == startingPosition.X && y == startingPosition.Y || world.Tiles[y][x] == "#" {
 					continue
 				}
@@ -114,9 +124,8 @@ func CalculateLoopablePositions(world World) int {
 				visitedLocations[startingPosition] = 1
 			}
 		}
-	} else {
-		return 0
 	}
+	c <- loopCount
 	return loopCount
 }
 
