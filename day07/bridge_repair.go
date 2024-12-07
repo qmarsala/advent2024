@@ -8,7 +8,10 @@ func RunDay(name string) {
 
 func SumSolvableEquations(input map[int64][]int64) (sum int64) {
 	for k, v := range input {
-		if Sum(v) == k || Product(v) == k {
+		if Sum(v) == k {
+			sum += Sum(v)
+		}
+		if Product(v) == k {
 			sum += Sum(v)
 		}
 	}
@@ -23,6 +26,7 @@ func Sum(numbers []int64) (sum int64) {
 }
 
 func Product(numbers []int64) (product int64) {
+	product = 1
 	for _, n := range numbers {
 		product *= n
 	}
