@@ -7,15 +7,15 @@ import (
 	"strings"
 )
 
-func RunDay() {
+func RunDay(name string) {
 	input, err := ReadCorruptedMemoryInputs()
 	if err != nil {
-		fmt.Printf("Day03 - [ERROR]: %v\n", err)
+		fmt.Printf("%v - [ERROR]: %v\n", name, err)
 		return
 	}
 	part1 := Calculate(input)
 	part2 := CalculatePartTwo(input)
-	fmt.Printf("Day03: %v, %v \n", part1, part2)
+	fmt.Printf("%v: %v, %v \n", name, part1, part2)
 }
 
 func ReadCorruptedMemoryInputs() (input string, err error) {

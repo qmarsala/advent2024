@@ -8,15 +8,15 @@ import (
 	"strings"
 )
 
-func RunDay() {
+func RunDay(name string) {
 	orders, updatedPages, err := ReadPrintOrderInputs()
 	if err != nil {
-		fmt.Printf("Day05 - [ERROR]: %v\n", err)
+		fmt.Printf("%v - [ERROR]: %v\n", name, err)
 		return
 	}
 	part1 := ScoreValidUpdates(orders, updatedPages)
 	part2 := ScoreInValidUpdates(orders, updatedPages)
-	fmt.Printf("Day05: %v, %v \n", part1, part2)
+	fmt.Printf("%v: %v, %v \n", name, part1, part2)
 }
 
 type Order struct {

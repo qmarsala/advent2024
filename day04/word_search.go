@@ -6,15 +6,15 @@ import (
 	"strings"
 )
 
-func RunDay() {
+func RunDay(name string) {
 	input, err := ReadWordSearchInputs()
 	if err != nil {
-		fmt.Printf("Day04 - [ERROR]: %v\n", err)
+		fmt.Printf("%v - [ERROR]: %v\n", name, err)
 		return
 	}
 	part1 := CountXMAS(input)
 	part2 := CountXMAS2(input)
-	fmt.Printf("Day04: %v, %v \n", part1, part2)
+	fmt.Printf("%v: %v, %v \n", name, part1, part2)
 }
 
 func ReadWordSearchInputs() (input [][]rune, err error) {

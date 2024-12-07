@@ -8,15 +8,15 @@ import (
 	"strings"
 )
 
-func RunDay() {
+func RunDay(name string) {
 	reports, err := ReadRedNosedReportInputs()
 	if err != nil {
-		fmt.Printf("Day02 - [ERROR]: %v\n", err)
+		fmt.Printf("%v - [ERROR]: %v\n", name, err)
 		return
 	}
 	part1 := CountSafeReports(reports, CheckPlantReport)
 	part2 := CountSafeReports(reports, CheckPlantReportWithDampening)
-	fmt.Printf("Day02: %v, %v \n", part1, part2)
+	fmt.Printf("%v: %v, %v \n", name, part1, part2)
 }
 
 func ReadRedNosedReportInputs() (reports [][]int64, err error) {

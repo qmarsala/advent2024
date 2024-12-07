@@ -11,16 +11,34 @@ import (
 	"time"
 )
 
+type Day struct {
+	RunDay func(string)
+	Name   string
+}
+
 func main() {
-	fmt.Println("Merry Christmas!")
-	day01.RunDay()
-	day02.RunDay()
-	day03.RunDay()
-	day04.RunDay()
-	day05.RunDay()
+	fmt.Print("Merry Christmas!\n\n")
+	days := []Day{
+		{RunDay: day01.RunDay, Name: "Day 01"},
+		{RunDay: day02.RunDay, Name: "Day 02"},
+		{RunDay: day03.RunDay, Name: "Day 03"},
+		{RunDay: day04.RunDay, Name: "Day 04"},
+		{RunDay: day05.RunDay, Name: "Day 05"},
+		{RunDay: day06.RunDay, Name: "Day 06"},
+	}
+	profile("All Days", func() {
+		for _, d := range days {
+			profile(d.Name, func() {
+				d.RunDay(d.Name)
+			})
+		}
+	})
+}
+
+func profile(name string, op func()) {
 	start := time.Now()
-	day06.RunDay()
+	op()
 	end := time.Now()
 	elapsed := end.Sub(start)
-	fmt.Printf("%v", elapsed)
+	fmt.Printf("%v completed in %v\n---\n", name, elapsed)
 }

@@ -6,15 +6,15 @@ import (
 	"strings"
 )
 
-func RunDay() {
+func RunDay(name string) {
 	input, err := ReadGuardPatrolInputs()
 	if err != nil {
-		fmt.Printf("Day06 - [ERROR]: %v\n", err)
+		fmt.Printf("%v - [ERROR]: %v\n", name, err)
 		return
 	}
 	part1 := CalculateTilesWalked(input)
 	part2 := CalculateLoopablePositions(input)
-	fmt.Printf("Day06: %v, %v \n", part1, part2)
+	fmt.Printf("%v: %v, %v \n", name, part1, part2)
 }
 
 func ReadGuardPatrolInputs() (world World, err error) {

@@ -9,16 +9,16 @@ import (
 	"strings"
 )
 
-func RunDay() {
+func RunDay(name string) {
 	input, err := ReadHistorianHysteriaInput()
 	if err != nil {
-		fmt.Printf("Day01 - [ERROR]: %v\n", err)
+		fmt.Printf("%v - [ERROR]: %v\n", name, err)
 		return
 	}
 
 	diff := HistorianHysteriaDifference(input.ListA, input.ListB)
 	sim := HistorianHysteriaSimilarity(input.ListA, input.ListB)
-	fmt.Printf("Day01: %v, %v \n", diff, sim)
+	fmt.Printf("%v: %v, %v \n", name, diff, sim)
 }
 
 type HistorianHysteriaInput struct {
