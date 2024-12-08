@@ -19,37 +19,58 @@ func RunDay(name string) {
 	fmt.Printf("%v: %v, %v \n", name, part1, part2)
 }
 
-func ReadBridgeRepairInputs() (input map[int64][]int64, err error) {
-	input = map[int64][]int64{}
+type Equation struct {
+	Result  int64
+	Numbers []int64
+}
+
+func ReadBridgeRepairInputs() (input []Equation, err error) {
 	err = fileio.ParseAllLines("./day07/input.txt", func(line string) {
 		parts := strings.Split(line, ":")
 		var key int64 = 0
 		if num, err := strconv.ParseInt(parts[0], 10, 64); err == nil {
 			key = num
 		} else {
+			fmt.Printf("key: %v\n", err)
 			return
 		}
-		numbers := strings.Split(parts[1], " ")
-		for _, n := range numbers {
+		numberString := strings.Split(parts[1], " ")
+		fmt.Printf("%v\n", numberString)
+		numbers := []int64{}
+		for _, n := range numberString {
+			if len(n) < 1 {
+				continue
+			}
 			if num, err := strconv.ParseInt(n, 10, 64); err == nil {
-				input[key] = append(input[key], num)
+				numbers = append(numbers, num)
+			} else {
+				fmt.Printf("val: %v\n", err)
+				return
 			}
 		}
+		input = append(input, Equation{
+			Result:  key,
+			Numbers: numbers,
+		})
+		print(input)
 	})
 	return input, err
 }
 
-func SumSolvableEquations(input map[int64][]int64) (sum int64) {
-	for k, v := range input {
+func SumSolvableEquations(input []Equation) (sum int64) {
+	for _, eq := range input {
+		fmt.Println(eq.Numbers)
+		operationCount := len(eq.Numbers) - 1
 		all := slices.Concat(
-			GenerateCombinations([]rune{'+', '*'}, len(v)-1),
-			GenerateCombinations([]rune{'*', '+'}, len(v)-1))
-		for _, c := range all {
-			if len(c) != len(v)-1 {
+			GenerateCombinations([]rune{'+', '*'}, operationCount),
+			GenerateCombinations([]rune{'*', '+'}, operationCount))
+		for _, operations := range all {
+			if len(operations) != operationCount {
 				continue
 			}
-			if ProcessOperators(v, c) == k {
-				sum += k
+			result := ProcessOperators(eq.Numbers, operations)
+			if result == eq.Result {
+				sum += eq.Result
 				break
 			}
 		}
@@ -66,7 +87,6 @@ func AddOperator(combinations [][]rune, combo []rune, alphabet []rune, length in
 	if length <= 0 {
 		return combinations
 	}
-
 	var newCombo = []rune{}
 	for _, ch := range alphabet {
 		newCombo = append(combo, ch)
