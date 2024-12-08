@@ -9,13 +9,13 @@ import (
 )
 
 func RunDay(name string) {
-	input, err := ReadBridgeRepairInputs()
+	_, err := ReadBridgeRepairInputs()
 	if err != nil {
 		fmt.Printf("%v - [ERROR]: %v\n", name, err)
 		return
 	}
-	part1 := SumSolvableEquations(input)
-	part2 := 0
+	part1 := "wip"
+	part2 := "wip"
 	fmt.Printf("%v: %v, %v \n", name, part1, part2)
 }
 
@@ -35,7 +35,6 @@ func ReadBridgeRepairInputs() (input []Equation, err error) {
 			return
 		}
 		numberString := strings.Split(parts[1], " ")
-		fmt.Printf("%v\n", numberString)
 		numbers := []int64{}
 		for _, n := range numberString {
 			if len(n) < 1 {
@@ -52,18 +51,14 @@ func ReadBridgeRepairInputs() (input []Equation, err error) {
 			Result:  key,
 			Numbers: numbers,
 		})
-		print(input)
 	})
 	return input, err
 }
 
 func SumSolvableEquations(input []Equation) (sum int64) {
 	for _, eq := range input {
-		fmt.Println(eq.Numbers)
 		operationCount := len(eq.Numbers) - 1
-		all := slices.Concat(
-			GenerateCombinations([]rune{'+', '*'}, operationCount),
-			GenerateCombinations([]rune{'*', '+'}, operationCount))
+		all := slices.Concat(GenerateCombinations([]rune{'+', '*'}, operationCount), GenerateCombinations([]rune{'*', '+'}, operationCount))
 		for _, operations := range all {
 			if len(operations) != operationCount {
 				continue

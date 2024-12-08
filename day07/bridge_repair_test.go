@@ -8,7 +8,7 @@ import (
 func TestBridgeRepair(t *testing.T) {
 	t.Run("simple equation", func(t *testing.T) {
 		input := []day07.Equation{
-			{Result: 2, Numbers: []int64{1, 1}},
+			{Result: 24372240066, Numbers: []int64{6, 1, 2, 89, 7, 2, 3, 1, 692, 4, 66}},
 		}
 		result := day07.SumSolvableEquations(input)
 		if result != 2 {
